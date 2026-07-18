@@ -1,5 +1,4 @@
 import "server-only";
-import Anthropic from "@anthropic-ai/sdk";
 import type {
   PatientChart,
   DischargeContext,
@@ -9,9 +8,9 @@ import type {
 } from "./types";
 
 // Server-side only. The API key is read from the environment and never reaches
-// the browser. See .env.local (git-ignored).
-const client = new Anthropic();
-
+// the browser. See .env.local (git-ignored). We call the Messages API over
+// plain fetch to avoid an extra runtime dependency.
+const API_URL = "https://api.anthropic.com/v1/messages";
 const MODEL = "claude-opus-4-8";
 
 const SYSTEM_PROMPT = `You are a clinical discharge-planning assistant supporting a hospital's multidisciplinary care team (physicians, nursing, PT/OT, social work, case management).
@@ -147,30 +146,52 @@ function buildChartText(chart: PatientChart): string {
   ].join("\n");
 }
 
+interface MessagesResponse {
+  content?: { type: string; text?: string }[];
+  error?: { message?: string };
+}
+
 export async function generateDischargeContext(
   patient: PatientChart,
 ): Promise<DischargeContext> {
-  const response = await client.messages.create({
-    model: MODEL,
-    max_tokens: 4000,
-    thinking: { type: "adaptive" },
-    system: SYSTEM_PROMPT,
-    output_config: {
-      format: {
-        type: "json_schema",
-        schema: OUTPUT_SCHEMA,
-      },
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) {
+    throw new Error(
+      "ANTHROPIC_API_KEY is not set. Add it to .env.local (server-side only).",
+    );
+  }
+
+  const res = await fetch(API_URL, {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      "x-api-key": apiKey,
+      "anthropic-version": "2023-06-01",
     },
-    messages: [
-      {
-        role: "user",
-        content: `Assess discharge readiness for this patient:\n\n${buildChartText(patient)}`,
-      },
-    ],
+    body: JSON.stringify({
+      model: MODEL,
+      max_tokens: 4000,
+      thinking: { type: "adaptive" },
+      system: SYSTEM_PROMPT,
+      output_config: { format: { type: "json_schema", schema: OUTPUT_SCHEMA } },
+      messages: [
+        {
+          role: "user",
+          content: `Assess discharge readiness for this patient:\n\n${buildChartText(patient)}`,
+        },
+      ],
+    }),
   });
 
-  const textBlock = response.content.find((b) => b.type === "text");
-  if (!textBlock || textBlock.type !== "text") {
+  const data = (await res.json()) as MessagesResponse;
+  if (!res.ok) {
+    throw new Error(
+      data.error?.message || `Anthropic API error (${res.status}).`,
+    );
+  }
+
+  const textBlock = data.content?.find((b) => b.type === "text" && b.text);
+  if (!textBlock?.text) {
     throw new Error("No structured output returned from the model.");
   }
 
