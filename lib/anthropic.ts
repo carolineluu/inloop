@@ -89,15 +89,12 @@ const OUTPUT_SCHEMA = {
 
 /**
  * Readiness is DERIVED from the indicators, never a free-form judgment:
- *  - any not_met      -> not_ready
- *  - none not_met but some improving -> nearly_ready
- *  - all met          -> ready
+ * "ready" only when EVERY clinical milestone is met; otherwise "not_ready".
  */
 export function deriveReadiness(indicators: ReadinessIndicator[]): Readiness {
-  if (indicators.length === 0) return "not_ready";
-  if (indicators.some((i) => i.status === "not_met")) return "not_ready";
-  if (indicators.some((i) => i.status === "improving")) return "nearly_ready";
-  return "ready";
+  return indicators.length > 0 && indicators.every((i) => i.status === "met")
+    ? "ready"
+    : "not_ready";
 }
 
 function bullets(lines: string[]): string {

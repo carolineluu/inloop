@@ -26,11 +26,6 @@ const READINESS: Record<Readiness, { label: string; className: string }> = {
     className:
       "bg-emerald-50 text-emerald-700 ring-emerald-600/20 dark:bg-emerald-950/40 dark:text-emerald-300 dark:ring-emerald-400/20",
   },
-  nearly_ready: {
-    label: "Nearly ready",
-    className:
-      "bg-amber-50 text-amber-700 ring-amber-600/20 dark:bg-amber-950/40 dark:text-amber-300 dark:ring-amber-400/20",
-  },
   not_ready: {
     label: "Not ready",
     className:

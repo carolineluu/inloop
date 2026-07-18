@@ -5,7 +5,7 @@
 
 export type Setting = "Inpatient" | "SNF" | "Hospice" | "Outpatient";
 
-export type Readiness = "ready" | "nearly_ready" | "not_ready";
+export type Readiness = "ready" | "not_ready";
 
 /** One row in the patient list. */
 export interface PatientSummary {
@@ -17,6 +17,8 @@ export interface PatientSummary {
   sex: string;
   /** Short human-facing medical record number derived from the patient id. */
   mrn: string;
+  /** Synthetic hospital bed location, e.g. "Tele 3 Room 41" (not in source data). */
+  location: string;
   visitTitle: string;
   visitType: string;
   setting: Setting;

@@ -139,6 +139,23 @@ function mrnFor(patientId: string): string {
   return "MRN-" + patientId.replace(/-/g, "").slice(0, 8).toUpperCase();
 }
 
+// Synthetic bed location — the source data has no room/unit, so derive a stable
+// one from the patient id in the form "Tele 3 Room 41" / "Obs Tele Room 214".
+const UNITS = ["Tele", "ICU", "Med Surg", "Obs Tele"];
+function hashCode(s: string): number {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0;
+  return h;
+}
+function synthLocation(patientId: string): string {
+  const h = hashCode(patientId);
+  const unit = UNITS[h % UNITS.length];
+  const room = 20 + ((h >>> 3) % 260); // 20–279
+  if (unit === "Obs Tele") return `Obs Tele Room ${room}`;
+  const section = 1 + ((h >>> 5) % 4); // 1–4
+  return `${unit} ${section} Room ${room}`;
+}
+
 function losDays(setting: Setting, start?: string, end?: string): number | null {
   if (!start || !end) return null;
   const ms = new Date(end).getTime() - new Date(start).getTime();
@@ -236,6 +253,7 @@ function toSummary(rec: RawRecord): PatientSummary {
     age: ageAt(rec.patient_context.patient.birthDate, rec.metadata.date),
     sex: rec.patient_context.patient.gender || "unknown",
     mrn: mrnFor(rec.metadata.patient_id),
+    location: synthLocation(rec.metadata.patient_id),
     visitTitle: rec.metadata.visit_title,
     visitType: rec.metadata.visit_type,
     setting,
