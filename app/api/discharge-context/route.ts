@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getPatient } from "@/lib/data";
 import { generateDischargeContext } from "@/lib/anthropic";
 import { getCachedContext, setCachedContext } from "@/lib/context-cache";
+import { getDummyContext } from "@/lib/dummy";
 
 export async function POST(request: Request) {
   let body: { id?: string; patientId?: string; refresh?: boolean };
@@ -16,6 +17,10 @@ export async function POST(request: Request) {
   if (!id) {
     return NextResponse.json({ error: "id is required." }, { status: 400 });
   }
+
+  // Dummy patients carry a fixed, pre-built context — no model call.
+  const dummy = getDummyContext(id);
+  if (dummy) return NextResponse.json(dummy);
 
   const patient = await getPatient(id);
   if (!patient) {

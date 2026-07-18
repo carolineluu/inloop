@@ -69,8 +69,8 @@ export function DischargeContextPanel({ id }: { id: string }) {
   }, [generate]);
 
   return (
-    <section className="rounded-lg border border-sky-200 bg-sky-50/40 p-5 dark:border-sky-900/60 dark:bg-sky-950/20 lg:h-full lg:overflow-y-auto">
-      <div className="mb-3 flex items-center justify-between gap-3">
+    <section className="p-6">
+      <div className="mb-4 flex items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <h2 className="text-sm font-semibold uppercase tracking-wide text-sky-800 dark:text-sky-300">
             Discharge Planning

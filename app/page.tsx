@@ -1,5 +1,6 @@
 import { getPatients } from "@/lib/data";
 import { getCachedContext } from "@/lib/context-cache";
+import { getDummyContext } from "@/lib/dummy";
 import { PatientListTable } from "@/components/PatientListTable";
 import type { Readiness } from "@/lib/types";
 
@@ -14,7 +15,8 @@ export default async function Home() {
 
   const readinessById: Record<string, Readiness | undefined> = {};
   for (const p of patients) {
-    readinessById[p.id] = getCachedContext(p.id)?.readiness;
+    readinessById[p.id] =
+      getCachedContext(p.id)?.readiness ?? getDummyContext(p.id)?.readiness;
   }
 
   return (

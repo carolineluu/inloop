@@ -10,6 +10,7 @@ import type {
   MedicationItem,
   DiagnosticReportItem,
 } from "./types";
+import { getDummyPatients, getDummyPatient } from "./dummy";
 
 // Canonical dataset: one Abridge "synthetic ambient FHIR" encounter per line.
 const DATA_PATH = path.join(
@@ -340,8 +341,7 @@ const SETTING_ORDER: Record<Setting, number> = {
 /** Patient list, admissions first (the discharge-planning cohort). */
 export async function getPatients(): Promise<PatientSummary[]> {
   const records = await load();
-  return records
-    .map(toSummary)
+  return [...records.map(toSummary), ...getDummyPatients()]
     .sort(
       (a, b) =>
         SETTING_ORDER[a.setting] - SETTING_ORDER[b.setting] ||
@@ -350,6 +350,8 @@ export async function getPatients(): Promise<PatientSummary[]> {
 }
 
 export async function getPatient(id: string): Promise<PatientChart | undefined> {
+  const dummy = getDummyPatient(id);
+  if (dummy) return dummy;
   const records = await load();
   const rec = records.find((r) => r.id === id);
   return rec ? toChart(rec) : undefined;
