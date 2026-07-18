@@ -24,15 +24,17 @@ export default async function PatientPage({
         ← Patient list
       </Link>
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
         <div className="lg:col-span-2">
           <PatientChart chart={chart} />
         </div>
-        <div className="lg:col-span-1">
-          <div className="lg:sticky lg:top-6">
+        {/* Full-height sticky side rail: stands on its own, separated from the
+            chart, and stays pinned as the chart scrolls (scrolls internally). */}
+        <aside className="lg:col-span-1">
+          <div className="lg:sticky lg:top-6 lg:h-[calc(100vh_-_3rem)]">
             <DischargeContextPanel id={chart.id} />
           </div>
-        </div>
+        </aside>
       </div>
     </main>
   );

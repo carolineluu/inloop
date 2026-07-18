@@ -5,6 +5,13 @@ import { useRouter } from "next/navigation";
 import type { DischargeContext, DoctorTodo } from "@/lib/types";
 import { ReadinessBadge, IndicatorDot } from "./badges";
 
+// Sort indicators worst-first: red (not_met) → amber (improving) → green (met).
+const INDICATOR_ORDER: Record<"met" | "improving" | "not_met", number> = {
+  not_met: 0,
+  improving: 1,
+  met: 2,
+};
+
 const TODO_LABEL: Record<DoctorTodo["type"], string> = {
   order: "Order",
   documentation: "Documentation",
@@ -62,21 +69,19 @@ export function DischargeContextPanel({ id }: { id: string }) {
   }, [generate]);
 
   return (
-    <section className="rounded-lg border border-sky-200 bg-sky-50/40 p-5 dark:border-sky-900/60 dark:bg-sky-950/20">
+    <section className="rounded-lg border border-sky-200 bg-sky-50/40 p-5 dark:border-sky-900/60 dark:bg-sky-950/20 lg:h-full lg:overflow-y-auto">
       <div className="mb-3 flex items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <h2 className="text-sm font-semibold uppercase tracking-wide text-sky-800 dark:text-sky-300">
-            Discharge context
+            Discharge Planning
           </h2>
           {data && <ReadinessBadge readiness={data.readiness} />}
         </div>
-        <button
-          onClick={() => generate(true)}
-          disabled={loading}
-          className="rounded-md border border-sky-300 px-2.5 py-1 text-xs font-medium text-sky-700 transition-colors hover:bg-sky-100 disabled:opacity-50 dark:border-sky-800 dark:text-sky-300 dark:hover:bg-sky-900/40"
-        >
-          {loading ? "Generating…" : "Regenerate"}
-        </button>
+        {loading && (
+          <span className="text-xs font-medium text-sky-700 dark:text-sky-300">
+            Generating…
+          </span>
+        )}
       </div>
 
       {loading && !data && (
@@ -92,20 +97,22 @@ export function DischargeContextPanel({ id }: { id: string }) {
       {data && (
         <div className="space-y-5">
           <div>
-            <p className="text-sm text-zinc-800 dark:text-zinc-200">
-              {data.summary}
+            <p className="text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+              Suggested disposition
             </p>
-            <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-              Suggested disposition:{" "}
-              <span className="font-medium text-zinc-700 dark:text-zinc-200">
-                {data.suggestedDisposition}
-              </span>
+            <p className="mt-1 text-sm text-zinc-800 dark:text-zinc-200">
+              {data.suggestedDisposition}
             </p>
           </div>
 
-          <Block title="Readiness indicators">
+          <Block title="Clinical Milestones">
             <ul className="space-y-2">
-              {data.readinessIndicators.map((ind, i) => (
+              {[...data.readinessIndicators]
+                .sort(
+                  (a, b) =>
+                    INDICATOR_ORDER[a.status] - INDICATOR_ORDER[b.status],
+                )
+                .map((ind, i) => (
                 <li key={i} className="flex gap-2 text-sm">
                   <IndicatorDot status={ind.status} />
                   <span>
@@ -122,29 +129,32 @@ export function DischargeContextPanel({ id }: { id: string }) {
             </ul>
           </Block>
 
-          <Block title="Doctor to-dos">
+          <Block title="Next steps">
             <ul className="space-y-2">
-              {data.doctorTodos.map((t, i) => (
-                <li key={i} className="flex items-start gap-2 text-sm">
-                  <TodoTag type={t.type} />
-                  <span>
-                    <span className="font-medium text-zinc-800 dark:text-zinc-100">
-                      {t.task}
+              {data.doctorTodos
+                .filter((t) => t.type !== "documentation")
+                .map((t, i) => (
+                  <li key={i} className="flex items-start gap-2 text-sm">
+                    <TodoTag type={t.type} />
+                    <span>
+                      <span className="font-medium text-zinc-800 dark:text-zinc-100">
+                        {t.task}
+                      </span>
+                      {/* Orders show only the order-set name; other types keep detail. */}
+                      {t.type !== "order" && t.detail && (
+                        <span className="text-zinc-500 dark:text-zinc-400">
+                          {" "}
+                          — {t.detail}
+                        </span>
+                      )}
+                      {t.priority && (
+                        <span className="ml-1 text-[11px] uppercase text-zinc-400">
+                          [{t.priority}]
+                        </span>
+                      )}
                     </span>
-                    {t.detail && (
-                      <span className="text-zinc-500 dark:text-zinc-400">
-                        {" "}
-                        — {t.detail}
-                      </span>
-                    )}
-                    {t.priority && (
-                      <span className="ml-1 text-[11px] uppercase text-zinc-400">
-                        [{t.priority}]
-                      </span>
-                    )}
-                  </span>
-                </li>
-              ))}
+                  </li>
+                ))}
             </ul>
           </Block>
 
