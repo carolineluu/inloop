@@ -160,7 +160,7 @@ export function PatientChart({ chart }: { chart: Chart }) {
           )}
         </Card>
 
-        <Card title="Medications (this encounter)">
+        <Card title={chart.medications.length ? "Medications (this encounter)" : "Medications (home / active)"}>
           {chart.medications.length ? (
             <ul className="space-y-1 text-sm text-zinc-700 dark:text-zinc-300">
               {chart.medications.map((m, i) => (
@@ -170,6 +170,14 @@ export function PatientChart({ chart }: { chart: Chart }) {
                     <span className="text-xs text-zinc-400">{m.status}</span>
                   )}
                 </li>
+              ))}
+            </ul>
+          ) : chart.longitudinalMedications.length ? (
+            // This dataset references encounter meds by id rather than inline,
+            // so fall back to the patient's active medication list.
+            <ul className="space-y-1 text-sm text-zinc-700 dark:text-zinc-300">
+              {chart.longitudinalMedications.map((m, i) => (
+                <li key={i}>{m}</li>
               ))}
             </ul>
           ) : (
