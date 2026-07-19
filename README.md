@@ -1,6 +1,6 @@
 # inloop — discharge-planning viewer for care teams
 
-Made by ([Jhonatan Munoz MD](https://www.linkedin.com/in/jhonatan-munoz-md-00735992/)), ([Caroline Luu](https://www.linkedin.com/in/carolineluu/), and Claude. View the demo
+Made by [Jhonatan Munoz MD](https://www.linkedin.com/in/jhonatan-munoz-md-00735992/), [Caroline Luu](https://www.linkedin.com/in/carolineluu/), and Claude. View the demo
 [here](https://www.loom.com/share/ab67edc64dc640838f4c9ac1e47db371).
 
 A web interface for doctors and multidisciplinary care teams to review their
