@@ -77,6 +77,10 @@ Key decisions made while building inloop, grouped by area.
 
 ## Still open
 
-- `components/AssessAllButton.tsx` is now dead code (not deleted yet).
 - Real inpatient assessments take ~30–40s (adaptive thinking); the dev-mode
   double-call was noted but not changed.
+
+## Resolved
+
+- Removed the unused `AssessAllButton` component (dead code after the "Assess
+  admissions" bulk button was dropped from the list).
