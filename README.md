@@ -1,83 +1,93 @@
-# inloop — discharge-context viewer for care teams
+# inloop — discharge-planning viewer for care teams
 
-Made by Jhonatan Munoz MD, Caroline Luu, and Claude. View demo [here]([url](https://www.loom.com/share/ab67edc64dc640838f4c9ac1e47db371).
+Made by Jhonatan Munoz MD, Caroline Luu, and Claude. View the demo
+[here](https://www.loom.com/share/ab67edc64dc640838f4c9ac1e47db371).
 
 A web interface for doctors and multidisciplinary care teams to review their
-patient list and open a patient chart. The differentiator over a typical
-patient-list app is **discharge context**: for each patient, the Claude API
-reads the clinical note, problems, vitals, and labs and returns discharge
-**recommendations** — readiness, the physician's remaining to-dos (including
-orders to place), and blockers. This helps the team discharge-plan early and
-move patients efficiently without sacrificing their perception of care.
+inpatient list and open a patient chart. The differentiator over a typical
+patient-list app is **discharge planning**: for each patient, Claude reads the
+clinical note, problems, vitals, and labs and returns clinical milestones, the
+physician's remaining next steps (including orders to place), blockers, and a
+suggested disposition. This helps the team discharge-plan early and move
+patients efficiently without sacrificing their perception of care.
 
-> Prototype built on a fully **synthetic** dataset. AI output is decision
-> support, **not** a substitute for clinical judgment.
+> Prototype built on **synthetic** data. AI output is decision support, **not**
+> a substitute for clinical judgment.
 
 ## Two screens
 
-1. **Patient list** (`/`) — a typical inpatient list (admissions first) with an
-   added **discharge-readiness** column. Readiness badges populate from the
-   AI assessment; an **Assess admissions** button generates them in bulk.
-2. **Patient chart** (`/patients/[id]`) — a typical chart (demographics,
-   encounter reason, problems, vitals, labs, medications, diagnostic reports,
-   SOAP note, after-visit summary, ambient transcript) with an in-depth
-   **Discharge context** panel.
+1. **Patient list** (`/`) — an inpatient census with **Location** (bed), reason
+   for encounter, admit date, LOS, and a **sortable Discharge readiness** column
+   (defaults to Ready-first). Badges are `Ready` / `Not ready` / `Not assessed`.
+2. **Patient chart** (`/patients/[id]`) — an EHR-style chart on the left
+   (patient banner with a Location/Admitted/LOS/Status facts row, a vitals tile
+   row, and titled sections: encounter reason, problem list, medications, labs,
+   diagnostic reports, clinical note) with a **right-docked Discharge Planning
+   drawer** on the right.
 
 ## Data
 
-Built on the Abridge **synthetic ambient FHIR** dataset (`data-src/`): 25
-clinical encounters from 25 synthetic patients (Synthea FHIR R4 + ambient
-transcript + generated note). The cohort spans inpatient, skilled-nursing,
-hospice, and outpatient settings; the 6 admissions are the discharge-planning
-focus. `lib/data.ts` parses `synthetic-ambient-fhir-25.jsonl` into the app's
-view models.
+- **Real:** the Abridge **synthetic ambient FHIR** dataset (`data-src/`) — 25
+  encounters (Synthea FHIR R4 + ambient transcript + generated note).
+  `lib/data.ts` parses `synthetic-ambient-fhir-25.jsonl`; the list is filtered to
+  the **Inpatient** setting.
+- **Demo:** `lib/dummy.ts` adds **9 dummy inpatients** (5 Ready / 4 Not ready —
+  hip fracture, UTI, sepsis, suicidal ideation, cellulitis, COPD, pneumonia, CHF,
+  GI bleed) with full charts and **pre-built discharge context**, so the list
+  shows a realistic mix without any model calls.
 
-## Discharge context (AI)
+## Discharge planning (AI)
 
-`lib/anthropic.ts` calls Claude (`claude-opus-4-8`, adaptive thinking) with the
-patient's note + structured chart and requests a structured
-(`output_config.format` / JSON schema) result:
+`lib/anthropic.ts` calls Claude (`claude-opus-4-8`, adaptive thinking) through
+the Messages API over plain `fetch` (no SDK dependency), **server-side only**, and
+requests a structured (`output_config.format` / JSON schema) result:
 
-- **`readinessIndicators`** — clinical milestones that determine readiness
-  (e.g. off supplemental oxygen, renal function improved, ambulating, tolerating
-  PO), each `met` / `improving` / `not_met` with cited evidence. **These drive readiness.**
-- **`readiness`** — **derived in code, not free-form**: all `met` → `ready`;
-  none `not_met` but some `improving` → `nearly_ready`; any `not_met` → `not_ready`.
-- **`doctorTodos`** — physician actions, with **orders to place** called out distinctly.
-- **`barriers`** — non-physician blockers (DME, transport, insurance, placement).
-- **`suggestedDisposition`** — home / home with services / SNF / rehab / hospice.
+- **`readinessIndicators`** (UI: **Clinical Milestones**) — diagnosis-specific
+  milestones in clinician language (e.g. resolution of AKI, correction of
+  thrombocytopenia), each `met` / `improving` / `not_met` with cited evidence.
+  **These drive readiness.**
+- **`readiness`** — **derived in code** (`deriveReadiness`), not free-form:
+  `ready` only when **every** milestone is `met`; otherwise `not_ready`.
+- **`doctorTodos`** (UI: **Next steps**) — physician actions; `order`-type items
+  are named verbatim as **Epic order sets** (from the Northwestern Medicine
+  inventory). Documentation-type items are hidden in the UI.
+- **`barriers`** and **`suggestedDisposition`** (home / home with services / SNF
+  / rehab / hospice).
 
-The call is **server-side only** (API route `app/api/discharge-context`), so the
-key never reaches the browser. Results are cached in memory per record for the
-session (see `lib/context-cache.ts`); "Regenerate" bypasses the cache.
+The `ANTHROPIC_API_KEY` never reaches the browser. Results are cached to disk
+(`.discharge-cache/`, git-ignored) so the readiness badge persists across dev
+recompiles and restarts. Dummy patients short-circuit to their fixed context.
 
 ## Architecture
 
 | Path | Role |
 | --- | --- |
 | `lib/types.ts` | Domain model (`PatientSummary`, `PatientChart`, `DischargeContext`) |
-| `lib/data.ts` | Parses the FHIR jsonl → view models; `getPatients()`, `getPatient(id)` |
-| `lib/anthropic.ts` | Claude client, prompt, JSON-schema output, `deriveReadiness()` |
-| `lib/context-cache.ts` | Session in-memory cache shared by the route and the list |
-| `app/api/discharge-context/route.ts` | `POST { id }` → `DischargeContext` |
-| `app/page.tsx` | Patient list |
-| `app/patients/[id]/page.tsx` | Patient chart + discharge panel |
-| `components/` | `PatientListTable`, `PatientChart`, `DischargeContextPanel`, badges |
+| `lib/data.ts` | Parses the FHIR jsonl and merges the dummy inpatients; `getPatients()`, `getPatient(id)` |
+| `lib/dummy.ts` | 9 dummy inpatients + their fixed discharge contexts |
+| `lib/anthropic.ts` | Messages-API call via `fetch`, prompt + Epic order-set reference, JSON-schema output, `deriveReadiness()` |
+| `lib/context-cache.ts` | Disk-backed context cache shared by the route and the list |
+| `app/api/discharge-context/route.ts` | `POST { id }` → `DischargeContext` (dummy patients return their fixed context) |
+| `app/page.tsx` | Patient list (inpatient census) |
+| `app/patients/[id]/page.tsx` | EHR chart + docked discharge drawer |
+| `components/` | `PatientListTable`, `PatientChart`, `DischargeContextPanel`, `badges` |
 
-Stack: Next.js 16 (App Router) · React 19 · Tailwind CSS v4 · TypeScript ·
-`@anthropic-ai/sdk`.
+Stack: Next.js 16 (App Router) · React 19 · Tailwind CSS v4 · TypeScript. Claude
+is called through the Messages API via `fetch` — no `@anthropic-ai/sdk`
+dependency.
 
 ## Getting started
 
 ```bash
-pnpm install
+npm install
 # Server-side key (git-ignored via .env*). Never commit this.
 echo 'ANTHROPIC_API_KEY=sk-ant-...' > .env.local
-pnpm dev
+npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000). Open a patient (admissions
-are at the top) to see the discharge-context panel generate.
+Open [http://localhost:3000](http://localhost:3000). Real inpatients generate
+their discharge planning live on first chart open (~30–40s with adaptive
+thinking) and then cache; the 9 dummy patients render instantly.
 
 ## Security
 
