@@ -4,6 +4,10 @@ import { generateDischargeContext } from "@/lib/anthropic";
 import { getCachedContext, setCachedContext } from "@/lib/context-cache";
 import { getDummyContext } from "@/lib/dummy";
 
+// The live Claude call (adaptive thinking) can take ~30–40s; Vercel's default
+// function timeout is 10s, so raise it (60s is the Hobby-plan maximum).
+export const maxDuration = 60;
+
 export async function POST(request: Request) {
   let body: { id?: string; patientId?: string; refresh?: boolean };
   try {

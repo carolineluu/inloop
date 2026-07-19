@@ -224,11 +224,17 @@ let cache: RawRecord[] | null = null;
 
 async function load(): Promise<RawRecord[]> {
   if (cache) return cache;
-  const raw = await readFile(DATA_PATH, "utf8");
-  cache = raw
-    .split("\n")
-    .filter((line) => line.trim().length > 0)
-    .map((line) => JSON.parse(line) as RawRecord);
+  try {
+    const raw = await readFile(DATA_PATH, "utf8");
+    cache = raw
+      .split("\n")
+      .filter((line) => line.trim().length > 0)
+      .map((line) => JSON.parse(line) as RawRecord);
+  } catch {
+    // If the source data file isn't available (e.g. not bundled in a
+    // serverless deploy), degrade to the dummy patients rather than 500.
+    cache = [];
+  }
   return cache;
 }
 
