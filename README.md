@@ -1,5 +1,7 @@
 # inloop — discharge-context viewer for care teams
 
+Made by Jhonatan Munoz MD, Caroline Luu, and Claude. View demo [here]([url](https://www.loom.com/share/ab67edc64dc640838f4c9ac1e47db371).
+
 A web interface for doctors and multidisciplinary care teams to review their
 patient list and open a patient chart. The differentiator over a typical
 patient-list app is **discharge context**: for each patient, the Claude API
