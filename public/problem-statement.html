@@ -78,6 +78,8 @@
   .brand{font-weight:700;letter-spacing:-.02em;font-size:17px;color:var(--ink);white-space:nowrap}
   .brand-sub{font-size:13px;color:var(--faint);white-space:nowrap}
   .bar .wrap{gap:10px}
+  .backbtn{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:12px;letter-spacing:.02em;color:var(--muted);text-decoration:none;border:1px solid var(--border);border-radius:8px;padding:5px 11px;white-space:nowrap;margin-right:4px}
+  .backbtn:hover{color:var(--ink);background:var(--surface);border-color:var(--border-strong)}
   .navlinks{display:flex;gap:2px;margin-left:auto;flex-wrap:wrap;justify-content:flex-end}
   .navlinks a{font-family:var(--mono);font-size:11.5px;letter-spacing:.03em;color:var(--muted);text-decoration:none;padding:5px 9px;border-radius:6px;white-space:nowrap}
   .navlinks a:hover{color:var(--ink);background:var(--raised)}
@@ -205,6 +207,7 @@
 <div class="atlas">
 
   <div class="bar"><div class="wrap">
+    <a href="/" class="backbtn" aria-label="Back to the inloop app"><span aria-hidden="true">&larr;</span> Back to app</a>
     <div class="brand">inloop</div>
     <span class="brand-sub">discharge planning</span>
     <nav class="navlinks">
