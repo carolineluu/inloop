@@ -4,25 +4,25 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>InLoop — Problem statement</title>
-<style>html,body{margin:0}body{background:#EEF1F4}@media(prefers-color-scheme:dark){body{background:#0B1116}}</style>
+<style>html,body{margin:0}body{background:#FAFAFA}@media(prefers-color-scheme:dark){body{background:#09090B}}</style>
 </head>
 <body>
 <style>
   :root{
-    --ground:#EEF1F4; --surface:#FFFFFF; --raised:#F7F9FB;
-    --ink:#14202B; --muted:#54646F; --faint:#7C8A94;
-    --border:#D6DDE3; --border-strong:#BCC7CF;
-    --accent:#0B6E7A; --accent-ink:#075059; --accent-soft:#DCEEF0;
-    --c-clinical:#3E6E8E; --c-clinical-bg:#E7EEF4;
-    --c-logistics:#8A6A34; --c-logistics-bg:#F1EADD;
-    --c-patient:#9C4F6B; --c-patient-bg:#F3E5EA;
-    --c-data:#5A6B76; --c-data-bg:#E9EDF0;
-    --c-ai:#0B6E7A; --c-ai-bg:#DCEEF0;
-    --ready:#1F7A54; --ready-bg:#DDEEE4;
-    --almost:#9C6B12; --almost-bg:#F3E9D4;
-    --notready:#A8382E; --notready-bg:#F3DEDB;
-    --unknown:#6C7A85; --unknown-bg:#E7EBEE;
-    --pos:#1F7A54; --neg:#A8382E;
+    --ground:#FAFAFA; --surface:#FFFFFF; --raised:#F4F4F5;
+    --ink:#18181B; --muted:#52525B; --faint:#71717A;
+    --border:#E4E4E7; --border-strong:#D4D4D8;
+    --accent:#0284C7; --accent-ink:#075985; --accent-soft:#E0F2FE;
+    --c-clinical:#3F6BA3; --c-clinical-bg:#EAF1F8;
+    --c-logistics:#B45309; --c-logistics-bg:#FBEFD6;
+    --c-patient:#BE123C; --c-patient-bg:#FDE7EA;
+    --c-data:#52525B; --c-data-bg:#F1F1F2;
+    --c-ai:#0284C7; --c-ai-bg:#E0F2FE;
+    --ready:#047857; --ready-bg:#D6F1E3;
+    --almost:#B45309; --almost-bg:#FBEFD6;
+    --notready:#BE123C; --notready-bg:#FDE7EA;
+    --unknown:#71717A; --unknown-bg:#F1F1F2;
+    --pos:#047857; --neg:#BE123C;
     --shadow:0 1px 2px rgba(20,32,43,.05),0 6px 20px -12px rgba(20,32,43,.18);
     --maxw:1120px; --radius:10px;
     --sans:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
@@ -30,38 +30,38 @@
   }
   @media (prefers-color-scheme:dark){
     :root{
-      --ground:#0B1116; --surface:#131D26; --raised:#0F1821;
-      --ink:#E7EDF2; --muted:#9AA9B3; --faint:#758691;
-      --border:#26333D; --border-strong:#35454F;
-      --accent:#33AEBC; --accent-ink:#8FD8E0; --accent-soft:#123138;
-      --c-clinical:#77A6C6; --c-clinical-bg:#17252F;
-      --c-logistics:#C6A05E; --c-logistics-bg:#20211A;
-      --c-patient:#D08AA3; --c-patient-bg:#241820;
-      --c-data:#93A4AF; --c-data-bg:#182028;
-      --c-ai:#33AEBC; --c-ai-bg:#102a30;
-      --ready:#4FB988; --ready-bg:#122A20;
-      --almost:#D2A44E; --almost-bg:#272016;
-      --notready:#E0685C; --notready-bg:#2A1917;
-      --unknown:#8A99A3; --unknown-bg:#1A222A;
-      --pos:#4FB988; --neg:#E0685C;
+      --ground:#09090B; --surface:#18181B; --raised:#111113;
+      --ink:#FAFAFA; --muted:#A1A1AA; --faint:#71717A;
+      --border:#27272A; --border-strong:#3F3F46;
+      --accent:#38BDF8; --accent-ink:#7DD3FC; --accent-soft:#0B2E42;
+      --c-clinical:#7FA9D6; --c-clinical-bg:#15202B;
+      --c-logistics:#D0A24E; --c-logistics-bg:#241E14;
+      --c-patient:#F472A0; --c-patient-bg:#26141B;
+      --c-data:#A1A1AA; --c-data-bg:#1B1B1F;
+      --c-ai:#38BDF8; --c-ai-bg:#0B2E42;
+      --ready:#34D399; --ready-bg:#0E2A20;
+      --almost:#D0A24E; --almost-bg:#241E14;
+      --notready:#FB7185; --notready-bg:#2A1519;
+      --unknown:#A1A1AA; --unknown-bg:#1B1B1F;
+      --pos:#34D399; --neg:#FB7185;
       --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px -14px rgba(0,0,0,.6);
     }
   }
   :root[data-theme="light"]{
-    --ground:#EEF1F4;--surface:#FFFFFF;--raised:#F7F9FB;--ink:#14202B;--muted:#54646F;--faint:#7C8A94;
-    --border:#D6DDE3;--border-strong:#BCC7CF;--accent:#0B6E7A;--accent-ink:#075059;--accent-soft:#DCEEF0;
-    --c-clinical:#3E6E8E;--c-clinical-bg:#E7EEF4;--c-logistics:#8A6A34;--c-logistics-bg:#F1EADD;
-    --c-patient:#9C4F6B;--c-patient-bg:#F3E5EA;--c-data:#5A6B76;--c-data-bg:#E9EDF0;--c-ai:#0B6E7A;--c-ai-bg:#DCEEF0;
-    --ready:#1F7A54;--ready-bg:#DDEEE4;--almost:#9C6B12;--almost-bg:#F3E9D4;--notready:#A8382E;--notready-bg:#F3DEDB;
-    --unknown:#6C7A85;--unknown-bg:#E7EBEE;--pos:#1F7A54;--neg:#A8382E;--shadow:0 1px 2px rgba(20,32,43,.05),0 6px 20px -12px rgba(20,32,43,.18);
+    --ground:#FAFAFA;--surface:#FFFFFF;--raised:#F4F4F5;--ink:#18181B;--muted:#52525B;--faint:#71717A;
+    --border:#E4E4E7;--border-strong:#D4D4D8;--accent:#0284C7;--accent-ink:#075985;--accent-soft:#E0F2FE;
+    --c-clinical:#3F6BA3;--c-clinical-bg:#EAF1F8;--c-logistics:#B45309;--c-logistics-bg:#FBEFD6;
+    --c-patient:#BE123C;--c-patient-bg:#FDE7EA;--c-data:#52525B;--c-data-bg:#F1F1F2;--c-ai:#0284C7;--c-ai-bg:#E0F2FE;
+    --ready:#047857;--ready-bg:#D6F1E3;--almost:#B45309;--almost-bg:#FBEFD6;--notready:#BE123C;--notready-bg:#FDE7EA;
+    --unknown:#71717A;--unknown-bg:#F1F1F2;--pos:#047857;--neg:#BE123C;--shadow:0 1px 2px rgba(20,32,43,.05),0 6px 20px -12px rgba(20,32,43,.18);
   }
   :root[data-theme="dark"]{
-    --ground:#0B1116;--surface:#131D26;--raised:#0F1821;--ink:#E7EDF2;--muted:#9AA9B3;--faint:#758691;
-    --border:#26333D;--border-strong:#35454F;--accent:#33AEBC;--accent-ink:#8FD8E0;--accent-soft:#123138;
-    --c-clinical:#77A6C6;--c-clinical-bg:#17252F;--c-logistics:#C6A05E;--c-logistics-bg:#20211A;
-    --c-patient:#D08AA3;--c-patient-bg:#241820;--c-data:#93A4AF;--c-data-bg:#182028;--c-ai:#33AEBC;--c-ai-bg:#102a30;
-    --ready:#4FB988;--ready-bg:#122A20;--almost:#D2A44E;--almost-bg:#272016;--notready:#E0685C;--notready-bg:#2A1917;
-    --unknown:#8A99A3;--unknown-bg:#1A222A;--pos:#4FB988;--neg:#E0685C;--shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px -14px rgba(0,0,0,.6);
+    --ground:#09090B;--surface:#18181B;--raised:#111113;--ink:#FAFAFA;--muted:#A1A1AA;--faint:#71717A;
+    --border:#27272A;--border-strong:#3F3F46;--accent:#38BDF8;--accent-ink:#7DD3FC;--accent-soft:#0B2E42;
+    --c-clinical:#7FA9D6;--c-clinical-bg:#15202B;--c-logistics:#D0A24E;--c-logistics-bg:#241E14;
+    --c-patient:#F472A0;--c-patient-bg:#26141B;--c-data:#A1A1AA;--c-data-bg:#1B1B1F;--c-ai:#38BDF8;--c-ai-bg:#0B2E42;
+    --ready:#34D399;--ready-bg:#0E2A20;--almost:#D0A24E;--almost-bg:#241E14;--notready:#FB7185;--notready-bg:#2A1519;
+    --unknown:#A1A1AA;--unknown-bg:#1B1B1F;--pos:#34D399;--neg:#FB7185;--shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px -14px rgba(0,0,0,.6);
   }
 
   *{box-sizing:border-box}
@@ -75,8 +75,9 @@
   /* top bar */
   .bar{position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--ground) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--border)}
   .bar .wrap{display:flex;align-items:center;gap:18px;height:56px}
-  .brand{font-weight:700;letter-spacing:-.02em;font-size:17px}
-  .brand span{color:var(--accent)}
+  .brand{font-weight:700;letter-spacing:-.02em;font-size:17px;color:var(--ink);white-space:nowrap}
+  .brand-sub{font-size:13px;color:var(--faint);white-space:nowrap}
+  .bar .wrap{gap:10px}
   .navlinks{display:flex;gap:2px;margin-left:auto;flex-wrap:wrap;justify-content:flex-end}
   .navlinks a{font-family:var(--mono);font-size:11.5px;letter-spacing:.03em;color:var(--muted);text-decoration:none;padding:5px 9px;border-radius:6px;white-space:nowrap}
   .navlinks a:hover{color:var(--ink);background:var(--raised)}
@@ -204,7 +205,8 @@
 <div class="atlas">
 
   <div class="bar"><div class="wrap">
-    <div class="brand">In<span>Loop</span></div>
+    <div class="brand">inloop</div>
+    <span class="brand-sub">discharge planning</span>
     <nav class="navlinks">
       <a href="#current">Current state</a>
       <a href="#gates">Decision gates</a>
