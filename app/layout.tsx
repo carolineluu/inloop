@@ -40,6 +40,15 @@ export default function RootLayout({
             <span className="text-sm text-zinc-400 dark:text-zinc-500">
               discharge planning
             </span>
+            <a
+              href="/problem-statement.html"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="ml-auto inline-flex items-center gap-1.5 rounded-md border border-zinc-300 px-3 py-1.5 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-900"
+            >
+              Problem statement
+              <span aria-hidden className="text-xs text-zinc-400">↗</span>
+            </a>
           </div>
         </header>
         {children}
